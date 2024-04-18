@@ -1,0 +1,16 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+
+{% block content %}
+<title>Confirm Account Deletion</title>
+<h1>Are you sure you want to delete your account?</h1>
+    <p>This action is irreversible.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">Confirm Deletion</button>
+        <a href="{% url 'some-other-view' %}">Cancel</a>
+    </form>
+
+{% endblock %}

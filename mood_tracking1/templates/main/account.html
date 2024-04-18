@@ -3,12 +3,6 @@
 
 
 {% block content %}
-    <nav class="breadcrumb" aria-label="breadcrumbs">
-        <ul>
-            <li><a href="">Dashboard</a></li>
-            <li class="is-active"><a href="{% url 'account' %}" aria-current="page">Account</a></li>
-        </ul>
-    </nav>
      <div class="columns">
      <div class="column is-6">
          <div class="media mb-4">
@@ -17,15 +11,19 @@
                  <div>
 
                      <div class="media-content">
-                         <p class="title is-3"> {% firstof user.get_username%}</p>
+                         <h1 class="title is-3"> Username: {% firstof user.get_username%}</h1>
                      </div>
 
                  </div>
              </div>
          </div>
      </div>
-     <a href="={% url 'edit_account' %}" class="button "> Edit profile</a>
-     <a href="#" class="button "> Delete profile </a>
+     <a href="{% url 'password_change' %}" class="button ">Change Password</a>
+
+         <form method="POST" action="{% url 'deleted-account'%}">
+             {% csrf_token %}
+     <button type="submit" id="delete-profile">Delete profile </button>
+             </form>
     </div>
 
 
@@ -35,21 +33,31 @@
     <div class="column">
         <h2> Friends</h2>
 
-        <a href="{% url 'friend:add' %}" class="button"> Add a Friend</a>
-    </div>
+        <form method="POST" action="{% url 'add-friend' %}">
+       {% csrf_token %}
+       <label for="friends">
+       <input type="text" name="friend_name" id="friend_name_texbox">
+       <button type="submit" id="add-friend">Add friend </button>
 
+           </label>
+    </form>
+    </div>
+{{ error }}
     <div class="column">
 
-{#            {% for friend in friends %}#}
-{#                <div class="column">#}
-{#                <div class="notifcation">#}
-{#                    <h3 class="is_size-5"> {{ friend.title }}</h3>#}
-{##}
-{#                    <h3></h3>#}
-{##}
-{#                    <a href="{% url 'friend:friend' friend.id %}" class="button">Details</a>#}
-{#                </div>#}
-{#                </div>#}
-{#            {% endfor %}#}
+            {% for friend in output %}
+                    <h3> {{ friend.name }}</h3>
+                    <h3> {{ friend.time }}</h3>
+                 <form method="POST" action="{% url 'dashboard' friend.user_id %}">
+                {% csrf_token %}
+                    <button type="submit"> Details</button>
+                 </form>
+                <form method="POST" action="{% url 'unfriend' friend.friend_id %}">
+                {% csrf_token %}
+                <button type="submit"> Unfriend</button>
+                </form>
+                </div>
+                </div>
+            {% endfor %}
     </div>
 {% endblock %}
