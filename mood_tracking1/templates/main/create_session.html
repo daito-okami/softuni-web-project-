@@ -1,0 +1,21 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+
+{% block content %}
+ <h1>Create a New Consulting Session</h1>
+
+    <form method="POST">
+        {% csrf_token %}  {{ form.as_p }}  <button type="submit">Create Session</button>
+    </form>
+
+    <h1> Saved sessions</h1>
+    {% for session in consults %}
+        <h4>Name: {{ session.Client_name }}</h4>
+        <h4>Location: {{ session.Client_location }}</h4>
+        <h4>Session start time {{ session.start_time }}</h4>
+        <h4>Session end time {{session.end_time }}</h4>
+        <h4>Phone Number {{session.phone_number }}</h4>
+
+    {% endfor %}
+{% endblock %}

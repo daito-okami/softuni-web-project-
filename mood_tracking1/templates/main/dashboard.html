@@ -3,8 +3,6 @@
 
 {% block content %}
     <script>
-
-
         function change_activity(localBtn) {
             let activityTextBox = document.getElementById('activity_text_box')
             let startActivityBtn = document.getElementById('start-activity')
@@ -18,13 +16,21 @@
             changeTextBox.value = localBtn.parentElement.children[0].childNodes[0].nodeValue
             startActivityBtn.setAttribute('disabled', 'disabled')
             changeBTN.removeAttribute('disabled')
-            localBtn.parentElement.setAttribute('hidden', 'hidden')
             eventId.value = localBtn.parentElement.children[4].textContent
             changeTextBox.removeAttribute('disabled')
             activityTextBox.setAttribute('disabled', 'disabled')
             moodTextBox.setAttribute('disabled', 'disabled')
             moodBTN.setAttribute('disabled', 'disabled')
 
+            let change_activityBTNS = document.querySelectorAll('[id=change-activity]');
+            let change_moodBTNS = document.querySelectorAll('[id=change-mood]');
+
+            for (let i=0; i<change_activityBTNS.length; ++i ){
+               change_activityBTNS[i].setAttribute('hidden', 'hidden')
+            }
+            for (let i=0; i<change_moodBTNS.length; ++i ) {
+                change_moodBTNS[i].setAttribute('hidden', 'hidden')
+            }
     }
 
     {#function change_activity2(){#}
@@ -49,28 +55,21 @@
     {##}
     {##}
     {#    localBtns.removeAttribute('hidden')#}
-    {#}#}
+
 
 </script>
 
 <div class="container">
     <h1>Mood Tracker Dashboard</h1>
+{% if output.is_OC %}
 
-  <form method="POST" action="{% url 'change-event' %}">
-       {% csrf_token %}
-       <label for="activity">
-       <input type="text" name="event-id" id="change-event-id" hidden="hidden">
-           <input type="text" name="event" disabled="disabled" id="change-event-event">
-       <button disabled="disabled" type="submit" id="change-activity2">Apply changes </button>
-
-           </label>
-    </form>
 
     <form method="POST" action="{% url 'start-activity' %}">
         {% csrf_token %}
             <label for="activity">
              <h4>-- Select activity --</h4>
-                 <input type="text" id="activity_text_box" name="event" required>
+{#                 <input type="text" id="activity_text_box" name="event" required>#}
+                    {{ output.start_activity_form }}
                   <button type="submit" id="start-activity">Start Activity</button>
             </label>
            </form>
@@ -80,39 +79,89 @@
         {% csrf_token %}
          <label for="mood">
                 <h4>-- Select Mood --</h4>
-                <input type="text" id="mood_text_box" name="event" required>
+              {{ output.start_mood_form }}
+{#                <input type="text" id="mood_text_box" name="event" required>#}
             <button type="submit" id="start-mood">Start Mood</button>
+
             </label>
     </form>
+     {{ output.error }}
+
+     <form method="POST" action="{% url 'change-event' %}">
+       {% csrf_token %}
+         <h4>-- Edited changes --</h4>
+       <label for="activity">
+           {{ output.change_event_form }}
+       <button disabled="disabled" type="submit" id="change-activity2">Apply changes </button>
+
+           </label>
+    </form>
+
+{% endif %}
 
         <h2>Currently Tracked Activities</h2>
                 <div id="activity-list">
-                    {% for activity in output %}
+                    {%  for activity in output.activities %}
+                        {% if forloop.first%}
                     <div id="activity-container">
                         Current activity is: <span id="activity-name">{{ activity.name }}</span>
+                        {% if output.is_OC %}
                         <button id="change-activity" onclick="change_activity(this)">Change Activity</button>
+                            {% endif %}
                         <br>
-                        Started it in time: <span id="activity-time">{{ activity.time }}</span>
+                        Duration: <span id="activity-time">{{ activity.time }}</span>
                         <span id="activity-id" hidden="hidden">{{ activity.id }}</span>
                         <br>
 
                         <div id="mood-container">
                             {% for mood in activity.moods %}
                             My current mood is: <span id="mood-name">{{ mood.name }}</span>
+                                {% if output.is_OC %}
                                 <button id="change-mood" onclick="change_activity(this)">Change Mood</button>
+                                {% endif %}
                             <br>
-                            The time I started is:<span id="mood-time">{{mood.time}}</span>
+                            Duration:<span id="mood-time">{{mood.time}}</span>
                                 <span id="mood-id" hidden="hidden">{{ mood.id }}</span>
                             <br>
                             {% endfor %}
                             <br>
                         </div>
                     </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
 
-        <div class="previous-activities">
+        <div id="previous-activities">
             <h2>Previous Activities</h2>
+             {%  for activity in output.activities %}
+                    {% if not forloop.first %}
+                    <div id="activity-container">
+                        Current activity is: <span id="activity-name">{{ activity.name }}</span>
+                    {% if output.is_OC %}
+{#                        <button id="change-activity" onclick="change_activity(this)">Change Activity</button>#}
+                        {% endif %}
+                        <br>
+                       Duration: <span id="activity-time">{{ activity.time }}</span>
+                        <span id="activity-id" hidden="hidden">{{ activity.id }}</span>
+                        <br>
+
+                        <div id="mood-container">
+                            {% for mood in activity.moods %}
+                            My mood was: <span id="mood-name">{{ mood.name }}</span>
+                                {% if output.is_OC %}
+{#                                <button id="change-mood" onclick="change_activity(this)">Change Mood</button>#}
+
+                                {% endif %}
+                            <br>
+                            Duration:<span id="mood-time">{{mood.time}}</span>
+                                <span id="mood-id" hidden="hidden">{{ mood.id }}</span>
+                            <br>
+                            {% endfor %}
+                            <br>
+                        </div>
+                    </div>
+        {% endif %}
+        {% endfor %}
             </div>
 
 </div>

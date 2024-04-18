@@ -22,7 +22,8 @@
 
     {% if user.is_authenticated %}
     <div class="login-buttons">
-        <a class="nav-link" href="{% url 'dashboard' %}"><button>Dashboard</button></a>
+        <a class="nav-link"  href="{% url 'session'%}"><button>Session</button></a>
+        <a class="nav-link"  href="{% url 'dashboard' user.id %} "><button>Dashboard</button></a>
         <a class="nav-link" href="{% url 'account' %}"><button>Profile: {{user.username}}</button></a>
         <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
             <button>Logout</button>
